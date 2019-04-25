@@ -32,8 +32,8 @@ void RR_Scheduler(struct job *job_list, int num_of_jobs);
 void calculateTotalTime(struct job* running_job);
 void calculateResponseTime(struct job* running_job);
 
-// int compareArrivalTime(const void * a, const void * b);
-// int compareDurationTime(const void * a, const void * b);
+void swap(struct job* a, struct job* b);
+
 void sortJobs(struct job job_list[], int num_of_jobs, enum Compare_t comparison);
 
 void printSchedulerResults(struct job* resulting_job_list, int num_of_jobs);
@@ -52,13 +52,13 @@ int main()
                 i + 1, job_list[i].job_id, job_list[i].arrival_time, job_list[i].duration);
     }
 
-    sortJobs(job_list, num_of_jobs, kDuration_BJF);
+    sortJobs(job_list, num_of_jobs, kArrival);
 
-    for(int i = 0; i < num_of_jobs; i++)
-    {
-            printf("JOB #%i: job_id: %i arrival_time: %i duration: %i\n", 
-                i + 1, job_list[i].job_id, job_list[i].arrival_time, job_list[i].duration);
-    }
+    // for(int i = 0; i < num_of_jobs; i++)
+    // {
+    //         printf("JOB #%i: job_id: %i arrival_time: %i duration: %i\n", 
+    //             i + 1, job_list[i].job_id, job_list[i].arrival_time, job_list[i].duration);
+    // }
 
     FIFO_Scheduler(job_list, num_of_jobs);
     SJF_Scheduler(job_list, num_of_jobs);
@@ -116,9 +116,6 @@ void FIFO_Scheduler(struct job *job_list, int num_of_jobs)
 
     for(int i = 0; i < num_of_jobs; i++)
     {
-        // printf("JOB #%i: job_id: %i arrival_time: %i duration: %i\n", 
-        //     i + 1, job_list[i].job_id, job_list[i].arrival_time, job_list[i].duration);
-        // printf("JOB %i IS RUNNING.\n", job_list[i].job_id);
         job_list[i].start_time = timer;
         timer += job_list[i].duration;
         job_list[i].finish_time = timer;
@@ -131,23 +128,15 @@ void FIFO_Scheduler(struct job *job_list, int num_of_jobs)
 
 void SJF_Scheduler(struct job *job_list, int num_of_jobs)
 {
-    // insert code
     printf("\nSJF Scheduler\n---------------\n");
+    struct job current_job_list[100];
 
-    int current_shortest = -1;
-    int timer = job_list[0].arrival_time;
-    int job_to_run = 0;
-
-
-    // for(int i = 0; i < num_of_jobs; i++)
-    // {
-    //     job_to_run = 0;
-    //     // check if following jobs have arrival times that are equal
-    //     while()
-    //     {
-            
-    //     }
-    // }
+    /*
+        1. Get Current Jobs
+            getCurrentJobList(current_job_list);
+        2. sortJobs(current_job_list, num_of_jobs, kDurantion_SJF);
+        3. Run current_job_list[0]
+    */
 }
 
 void BJF_Scheduler(struct job *job_list, int num_of_jobs)
@@ -200,66 +189,40 @@ void calculateResponseTime(struct job* running_job)
     running_job->response_time = running_job->start_time - running_job->arrival_time;
 }
 
-// int compareArrivalTime(const void * a, const void * b)
-// {
-//     if(((struct job *)a)->arrival_time > ((struct job *)b)->arrival_time){
-//         return 1;
-//     }
-//     else
-//     {
-//         return 0;
-//     }
-// }
+void swap(struct job* a, struct job* b)
+{
+    struct job temp = *a; 
+    *a = *b; 
+    *b = temp;
+}
 
-// int compareDurationTime(const void * a, const void * b)
-// {
-//     if(((struct job *)a)->duration > ((struct job *)b)->duration){
-//         return 1;
-//     }
-//     else
-//     {
-//         return 0;
-//     }
-// }
 
 void sortJobs(struct job job_list[], int num_of_jobs, enum Compare_t comparison)
 {
-    struct job temp;
-
+    // Bubble Sort
     for(int i = 0; i < num_of_jobs; i++)
     {
         for(int j = 0; j < num_of_jobs - i - 1; j++)
         {
             if(comparison == kArrival)
             {
-                printf("Compare Arrival\n");
-                if(job_list[j].arrival_time < job_list[j+1].arrival_time)
+                if(job_list[j].arrival_time > job_list[j+1].arrival_time)
                 {
-                    temp = job_list[j]; 
-                    job_list[j] = job_list[j+1]; 
-                    job_list[j+1] = temp; 
+                    swap(&job_list[j], &job_list[j+1]);
                 }
             }
             else if(comparison == kDuration_SJF)
             {
-                printf("Compare Duration_SJF\n");
                 if(job_list[j].duration > job_list[j+1].duration)
                 {
-                    printf("swap %i and %i\n", job_list[j].job_id, job_list[j+1].job_id);
-                    temp = job_list[j]; 
-                    job_list[j] = job_list[j+1]; 
-                    job_list[j+1] = temp; 
+                    swap(&job_list[j], &job_list[j+1]);
                 }
             }
             else if(comparison == kDuration_BJF)
             {
-                printf("Compare Duration_SJF\n");
                 if(job_list[j].duration < job_list[j+1].duration)
                 {
-                    printf("swap %i and %i\n", job_list[j].job_id, job_list[j+1].job_id);
-                    temp = job_list[j]; 
-                    job_list[j] = job_list[j+1]; 
-                    job_list[j+1] = temp; 
+                    swap(&job_list[j], &job_list[j+1]);
                 }
             }
         }
