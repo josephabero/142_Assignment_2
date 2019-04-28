@@ -117,23 +117,15 @@ void getCurrentJobList(struct job *job_list, struct job *current_job_list, int n
 	*num_of_curr = 0;
 	for (int i = 0; i < num_of_jobs; i++)
 	{
-		printf("arrival time: job[%i]: %i %i  %i\n", job_list[i].job_id, job_list[i].arrival_time, job_list[i].finish_time, timer);
-		printf("bool: %i\n", (job_list[i].finish_time < 0) && (job_list[i].arrival_time <= timer));
+		// printf("arrival time: job[%i]: %i %i  %i\n", job_list[i].job_id, job_list[i].arrival_time, job_list[i].finish_time, timer);
+		// printf("bool: %i\n", (job_list[i].finish_time < 0) && (job_list[i].arrival_time <= timer));
 		if( (job_list[i].finish_time < 0)
 		 && (job_list[i].arrival_time <= timer))
 		{
-			printf("added\n");
 			current_job_list[*num_of_curr] = job_list[i];
 			(*num_of_curr)++;
 		}
 	}
-	printf("num_of_curr: %i\n", *num_of_curr);
-	for(int i =0; i < *num_of_curr; i++)
-	{
-		printf("Current_Job_list:%i\n", current_job_list[i].job_id);
-	}
-
-
 }
 
 void FIFO_Scheduler(struct job *job_list, int num_of_jobs)
@@ -164,11 +156,8 @@ void SJF_Scheduler(struct job *job_list, int num_of_jobs)
    
    for(int i = 0; i < num_of_jobs; i++)
    {
-
-
-    	printf("timer: %i\n", timer);
-    	getCurrentJobList(job_list,current_job_list, num_of_jobs, timer, &num_of_curr);
-    	sortJobs(current_job_list, num_of_jobs, kDuration_SJF);
+    	getCurrentJobList(job_list, current_job_list, num_of_jobs, timer, &num_of_curr);
+    	sortJobs(current_job_list, num_of_curr, kDuration_SJF);
 
     	for ( int i = 0; i < num_of_jobs; i++)
     	{
@@ -178,16 +167,13 @@ void SJF_Scheduler(struct job *job_list, int num_of_jobs)
     			job_list[i].start_time = timer;
     			job_list[i].finish_time = timer + job_list[i].duration;
     			timer = job_list[i].finish_time;
+                calculateTotalTime(&job_list[i]);
+                calculateResponseTime(&job_list[i]);
     		}
-
     	}
-
-
-    	// calculateTotalTime(&job_list[i]);
-    	// calculateResponseTime(&job_list[i]);
-
     }
 
+    
     printSchedulerResults(job_list, num_of_jobs);
     /*
         1. Get Current Jobs
