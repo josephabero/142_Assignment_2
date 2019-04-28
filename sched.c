@@ -20,7 +20,8 @@ enum Compare_t
     kArrivalDur_SJF = 1,
     kDuration_SJF = 2,
     kDuration_BJF = 3,
-    kStart_Time = 4
+    kStart_Time = 4,
+    kFinish_Time = 5
 };
 
 void getJobList(struct job job_list[], int *num_of_jobs);
@@ -242,7 +243,9 @@ void STCF_Scheduler(struct job *job_list, int num_of_jobs)
                 if(job_list[i].run_progress == job_list[i].duration)
                 {
                     job_list[i].finish_time = timer + 1;
-                    printf("finished job %i: %i\n", job_list[i].job_id, job_list[i].finish_time);
+                    // printf("finished job %i: %i\n", job_list[i].job_id, job_list[i].finish_time);
+                    calculateTotalTime(&job_list[i]);
+                calculateResponseTime(&job_list[i]);
                 }
             }
             if(job_list[i].finish_time < 0)
@@ -254,7 +257,7 @@ void STCF_Scheduler(struct job *job_list, int num_of_jobs)
 
     }while(!done);
 
-    sortJobs(job_list, num_of_jobs, kStart_Time);
+    sortJobs(job_list, num_of_jobs, kFinish_Time);
     printSchedulerResults(job_list, num_of_jobs);
 }
 
@@ -324,6 +327,13 @@ void sortJobs(struct job job_list[], int num_of_jobs, enum Compare_t comparison)
             else if(comparison == kStart_Time)
             {
                 if(job_list[j].start_time > job_list[j+1].start_time)
+                {
+                    swap(&job_list[j], &job_list[j+1]);
+                }
+            }
+            else if(comparison == kFinish_Time)
+            {
+                if(job_list[j].finish_time > job_list[j+1].finish_time)
                 {
                     swap(&job_list[j], &job_list[j+1]);
                 }
