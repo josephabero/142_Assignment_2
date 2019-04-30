@@ -204,6 +204,34 @@ void BJF_Scheduler(struct job *job_list, int num_of_jobs)
 {
     // insert code
     printf("\nBJF Scheduler\n---------------\n");
+
+    struct job current_job_list[100];
+
+    int timer = 0;
+    int num_of_curr = 0;
+
+  	for(int i = 0; i < num_of_jobs; i++)
+  	{
+
+  		getCurrentJobList(job_list, current_job_list, num_of_jobs, timer, &num_of_curr);
+  		sortJobs(current_job_list, num_of_curr, kDuration_BJF);
+
+
+  		for ( int i = 0; i < num_of_jobs; i++)
+  		{
+  			if( job_list[i].job_id == current_job_list[0].job_id)
+  			{
+  				job_list[i].start_time = timer;
+    			job_list[i].finish_time = timer + job_list[i].duration;
+    			timer = job_list[i].finish_time;
+                calculateTotalTime(&job_list[i]);
+                calculateResponseTime(&job_list[i]);
+  			}
+  		}
+  	}
+  	sortJobs(job_list, num_of_jobs, kStart_Time);
+    printSchedulerResults(job_list, num_of_jobs);
+    resetList(job_list, num_of_jobs);
 }
 
 void STCF_Scheduler(struct job *job_list, int num_of_jobs)
