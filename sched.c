@@ -175,7 +175,7 @@ void SJF_Scheduler(struct job *job_list, int num_of_jobs)
     	getCurrentJobList(job_list, current_job_list, num_of_jobs, timer, &num_of_curr);
     	sortJobs(current_job_list, num_of_curr, kDuration_SJF);
 
-    	for ( int i = 0; i < num_of_jobs; i++)
+    	for(int i = 0; i < num_of_jobs; i++)
     	{
 
     		if( job_list[i].job_id == current_job_list[0].job_id)
@@ -240,15 +240,50 @@ void STCF_Scheduler(struct job *job_list, int num_of_jobs)
     printf("\nSTCF Scheduler\n---------------\n");   
 
     int timer = 0;
-    int done = 0;
+    int done = 1;
+    int num_of_curr = 0;
+    struct job current_job_list[100];
 
-    // while(!done)
-    // {
-    //     for(int i = 0; i < num_of_jobs; i++)
-    //     {
-    //         getCurrentJobList()
-    //     }
-    // }
+    do
+    {
+        done = 1;
+        getCurrentJobList(job_list, current_job_list, num_of_jobs, timer, &num_of_curr);
+        sortJobs(current_job_list, num_of_curr, kDuration_SJF);
+        // if(timer == 10)
+        // {
+        //     for(int i=0; i < num_of_curr; i++)
+        //     {
+        //         printf("CURRENT: %i\n", current_job_list[i].job_id);
+        //     }
+        // }
+        // printf("running job %i : %i\n", current_job_list[0].job_id, timer);
+        // Evaluate if job has finished
+        for(int i=0; i < num_of_jobs; i++)
+        {
+            if(job_list[i].job_id == current_job_list[0].job_id)
+            {
+                if(job_list[i].start_time < 0)
+                {
+                    job_list[i].start_time = timer;
+                }
+                job_list[i].run_progress += 1;
+                if(job_list[i].run_progress == job_list[i].duration)
+                {
+                    job_list[i].finish_time = timer + 1;
+                    printf("finished job %i: %i\n", job_list[i].job_id, job_list[i].finish_time);
+                }
+            }
+            if(job_list[i].finish_time < 0)
+            {
+                done = 0;
+            }
+        }
+        timer += 1;
+
+    }while(!done);
+
+    sortJobs(job_list, num_of_jobs, kStart_Time);
+    printSchedulerResults(job_list, num_of_jobs);
 }
 
 void RR_Scheduler(struct job *job_list, int num_of_jobs)
