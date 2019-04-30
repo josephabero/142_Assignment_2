@@ -131,6 +131,7 @@ void getJobList(struct job job_list[], int *num_of_jobs)
 void getCurrentJobList(struct job *job_list, struct job *current_job_list, int num_of_jobs, int timer, int *num_of_curr)
 {
 	*num_of_curr = 0;
+    // printf("getting curr job list: %i\n", num_of_jobs);
 	for (int i = 0; i < num_of_jobs; i++)
 	{
 		// printf("arrival time: job[%i]: %i %i  %i\n", job_list[i].job_id, job_list[i].arrival_time, job_list[i].finish_time, timer);
@@ -205,6 +206,34 @@ void BJF_Scheduler(struct job *job_list, int num_of_jobs)
 {
     // insert code
     printf("\nBJF Scheduler\n---------------\n");
+
+    struct job current_job_list[100];
+
+    int timer = 0;
+    int num_of_curr = 0;
+
+  	for(int i = 0; i < num_of_jobs; i++)
+  	{
+
+  		getCurrentJobList(job_list, current_job_list, num_of_jobs, timer, &num_of_curr);
+  		sortJobs(current_job_list, num_of_curr, kDuration_BJF);
+
+
+  		for ( int i = 0; i < num_of_jobs; i++)
+  		{
+  			if( job_list[i].job_id == current_job_list[0].job_id)
+  			{
+  				job_list[i].start_time = timer;
+    			job_list[i].finish_time = timer + job_list[i].duration;
+    			timer = job_list[i].finish_time;
+                calculateTotalTime(&job_list[i]);
+                calculateResponseTime(&job_list[i]);
+  			}
+  		}
+  	}
+  	sortJobs(job_list, num_of_jobs, kStart_Time);
+    printSchedulerResults(job_list, num_of_jobs);
+    resetList(job_list, num_of_jobs);
 }
 
 void STCF_Scheduler(struct job *job_list, int num_of_jobs)
@@ -245,7 +274,7 @@ void STCF_Scheduler(struct job *job_list, int num_of_jobs)
                     job_list[i].finish_time = timer + 1;
                     // printf("finished job %i: %i\n", job_list[i].job_id, job_list[i].finish_time);
                     calculateTotalTime(&job_list[i]);
-                calculateResponseTime(&job_list[i]);
+                    calculateResponseTime(&job_list[i]);
                 }
             }
             if(job_list[i].finish_time < 0)
@@ -259,12 +288,63 @@ void STCF_Scheduler(struct job *job_list, int num_of_jobs)
 
     sortJobs(job_list, num_of_jobs, kFinish_Time);
     printSchedulerResults(job_list, num_of_jobs);
+    resetList(job_list, num_of_jobs);
 }
 
 void RR_Scheduler(struct job *job_list, int num_of_jobs)
 {
     // insert code
     printf("\nRR Scheduler\n---------------\n");
+
+    int done = 1;
+    int num_of_curr = 0;
+    int timer = 0;
+    struct job current_job_list[100];
+
+    do
+    {
+        done = 1;
+        getCurrentJobList(job_list, current_job_list, num_of_jobs, timer, &num_of_curr);
+
+        // printf("enter loop: %i\n", num_of_curr);
+        // for(int i=0; i < num_of_curr; i++)
+        // {
+        //     printf("CURRENT: %i\n", current_job_list[i].job_id);
+        // }
+        for(int curr_index = 0; curr_index < num_of_curr; curr_index++)
+        {
+            // printf("running job %i : %i\n", current_job_list[curr_index].job_id, timer);
+            for(int job_index = 0; job_index < num_of_jobs; job_index++)
+            {
+                if(job_list[job_index].job_id == current_job_list[curr_index].job_id)
+                {
+                    if(job_list[job_index].start_time < 0)
+                    {
+                        job_list[job_index].start_time = timer;
+                    }
+
+                    job_list[job_index].run_progress++;
+
+                    if(job_list[job_index].run_progress == job_list[job_index].duration)
+                    {
+                        job_list[job_index].finish_time = timer + 1;
+                        calculateTotalTime(&job_list[job_index]);
+                        calculateResponseTime(&job_list[job_index]);
+                    }
+                }
+                if(job_list[job_index].finish_time < 0)
+                {
+                    done = 0;
+                }
+            }
+            timer++;
+        }
+        
+    }while(!done);
+
+    sortJobs(job_list, num_of_jobs, kFinish_Time);
+    printSchedulerResults(job_list, num_of_jobs);
+    resetList(job_list, num_of_jobs);
 }
 
 void calculateTotalTime(struct job* running_job)
