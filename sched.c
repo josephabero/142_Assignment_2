@@ -147,7 +147,8 @@ int getCurrentJobList(struct job *job_list, struct job *current_job_list, int nu
 void FIFO_Scheduler(struct job *job_list, int num_of_jobs)
 {
     int timer = job_list[0].arrival_time;
-    printf("\nFIFO Scheduler\n---------------\n");
+    printf("\n\t\t\t\tFIFO Scheduler\n");
+    printf("-----------------------------------------------------------------------------------\n");
 
     for(int i = 0; i < num_of_jobs; i++)
     {
@@ -168,7 +169,8 @@ void FIFO_Scheduler(struct job *job_list, int num_of_jobs)
 
 void SJF_Scheduler(struct job *job_list, int num_of_jobs)
 {
-    printf("\nSJF Scheduler\n---------------\n");
+    printf("\n\t\t\t\tSJF Scheduler\n");
+    printf("-----------------------------------------------------------------------------------\n");
     struct job current_job_list[100];
 
     int timer = job_list[0].arrival_time;
@@ -217,7 +219,8 @@ void SJF_Scheduler(struct job *job_list, int num_of_jobs)
 void BJF_Scheduler(struct job *job_list, int num_of_jobs)
 {
     // insert code
-    printf("\nBJF Scheduler\n---------------\n");
+    printf("\n\t\t\t\tBJF Scheduler\n");
+    printf("-----------------------------------------------------------------------------------\n");
 
     struct job current_job_list[100];
 
@@ -256,7 +259,8 @@ void BJF_Scheduler(struct job *job_list, int num_of_jobs)
 void STCF_Scheduler(struct job *job_list, int num_of_jobs)
 {
     // insert code
-    printf("\nSTCF Scheduler\n---------------\n");   
+    printf("\n\t\t\t\tSTCF Scheduler\n");
+    printf("-----------------------------------------------------------------------------------\n");  
 
     int timer = job_list[0].arrival_time;
     int done = 1;
@@ -320,7 +324,8 @@ void STCF_Scheduler(struct job *job_list, int num_of_jobs)
 void RR_Scheduler(struct job *job_list, int num_of_jobs)
 {
     // insert code
-    printf("\nRR Scheduler\n---------------\n");
+    printf("\n\t\t\t\tRR Scheduler\n");
+    printf("-----------------------------------------------------------------------------------\n");
 
     int done = 1;
     int num_of_curr = 0;
@@ -458,11 +463,14 @@ void sortJobs(struct job job_list[], int num_of_jobs, enum Compare_t comparison)
 
 void printSchedulerResults(struct job* resulting_job_list, int num_of_jobs)
 {
+    printf("\t\t Start Time \t Finish Time \t Total Time \t Response Time \n");
+    printf("\t      ===================================================================\n");
     int avg_total_time = 0, avg_response_time = 0;
     for(int i = 0; i < num_of_jobs; i++)
     {
-        printf("JOB #%i Arrival: %i Start Time: %i Finish Time: %i Total Time: %i Response Time: %i\n", 
-            resulting_job_list[i].job_id, resulting_job_list[i].arrival_time, resulting_job_list[i].start_time, resulting_job_list[i].finish_time, resulting_job_list[i].total_time, resulting_job_list[i].response_time);
+        printf("JOB %4i: %12i %16i %16i %16i\n", 
+            resulting_job_list[i].job_id, resulting_job_list[i].start_time, resulting_job_list[i].finish_time, 
+            resulting_job_list[i].total_time, resulting_job_list[i].response_time);
 
         avg_total_time += resulting_job_list[i].total_time;
         avg_response_time += resulting_job_list[i].response_time;
@@ -470,7 +478,7 @@ void printSchedulerResults(struct job* resulting_job_list, int num_of_jobs)
 
     avg_total_time /= num_of_jobs;
     avg_response_time /= num_of_jobs;
-    printf("AVG Total Time: %i AVG Response Time: %i\n", avg_total_time, avg_response_time);
+    printf("\nAVG Total Time: %i AVG Response Time: %i\n\n", avg_total_time, avg_response_time);
 }
 
 void printJobs(struct job* job_list, int num_of_jobs)
